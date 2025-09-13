@@ -1,0 +1,111 @@
+import React, { useState } from 'react';
+
+const knowledgeBase = {
+academicSchedules:
+"Academic schedules are posted each semester on the registrar's website. Classes start at 8 AM and end at 6 PM.",
+facilityTimings:
+"Library is open from 8 AM to 10 PM. Dining halls operate from 7 AM to 9 PM.",
+campusEvents:
+"Upcoming events include the Spring Fest on March 15th and Career Fair on April 2nd.",
+diningServices:
+"Dining services offer vegetarian and vegan options. Meal plans are available online.",
+libraryResources:
+"Library offers books, digital resources, study rooms, and printing services.",
+adminProcedures:
+"Administrative procedures like registration, fee payment, and transcript requests are handled at the student services
+office from 9 AM to 5 PM.",
+};
+
+function getResponse(query) {
+const q = query.toLowerCase();
+
+if (q.includes('schedule') || q.includes('class time')) {
+return knowledgeBase.academicSchedules;
+}
+if (q.includes('facility') || q.includes('timing') || q.includes('hours')) {
+return knowledgeBase.facilityTimings;
+}
+if (q.includes('event') || q.includes('festival') || q.includes('fair')) {
+return knowledgeBase.campusEvents;
+}
+if (q.includes('dining') || q.includes('food') || q.includes('meal')) {
+return knowledgeBase.diningServices;
+}
+if (q.includes('library') || q.includes('book') || q.includes('resource')) {
+return knowledgeBase.libraryResources;
+}
+if (
+q.includes('admin') ||
+q.includes('procedure') ||
+q.includes('registration') ||
+q.includes('fee')
+) {
+return knowledgeBase.adminProcedures;
+}
+
+return "Sorry, I couldn't understand your question. Please try asking about academic schedules, facilities, events,
+dining, library, or administrative procedures.";
+}
+
+export default function App() {
+const [messages, setMessages] = useState([
+{
+sender: 'bot',
+text: 'Hello! I am your campus assistant. How can I help you today?',
+},
+]);
+const [input, setInput] = useState('');
+
+const sendMessage = () => {
+if (!input.trim()) return;
+
+const userMessage = { sender: 'user', text: input };
+setMessages((msgs) => [...msgs, userMessage]);
+
+const botReply = getResponse(input);
+const botMessage = { sender: 'bot', text: botReply };
+
+setMessages((msgs) => [...msgs, botMessage]);
+setInput('');
+};
+
+const handleKeyDown = (e) => {
+if (e.key === 'Enter' && !e.shiftKey) {
+e.preventDefault();
+sendMessage();
+}
+};
+
+return (
+<div style={{ maxWidth: 600, margin: 'auto' , fontFamily: 'Arial, sans-serif' , padding: 20, }}>
+    <h1>Campus Information Chatbot</h1>
+
+    <div style={{ border: '1px solid #ccc' , borderRadius: 5, padding: 10, height: 400, overflowY: 'auto' ,
+        marginBottom: 10, backgroundColor: '#f9f9f9' , }}>
+        {messages.map((msg, idx) => (
+        <div key={idx} style={{ textAlign: msg.sender==='user' ? 'right' : 'left' , margin: '10px 0' , }}>
+            <span style={{ display: 'inline-block' , padding: '10px 15px' , borderRadius: 20, backgroundColor:
+                msg.sender==='user' ? '#007bff' : '#e4e6eb' , color: msg.sender==='user' ? 'white' : 'black' ,
+                maxWidth: '70%' , whiteSpace: 'pre-wrap' , wordWrap: 'break-word' , }}>
+                {msg.text}
+            </span>
+        </div>
+        ))}
+    </div>
+
+    <textarea value={input} onChange={(e)=> setInput(e.target.value)}
+        onKeyDown={handleKeyDown}
+        rows={2}
+        placeholder="Type your question here..."
+        style={{ width: '100%', padding: 10, borderRadius: 5, borderColor: '#ccc' }}
+      />
+
+      <button
+        onClick={sendMessage}
+        style={{ marginTop: 10, padding: '10px 20px', borderRadius: 5, cursor: 'pointer' }}
+      >
+        Send
+      </button>
+    </div>
+  );
+}
